@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Noble HammerTime Toolkit</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-theme="classic">
+  <div class="app">
+    <div class="app-inner">
+      <header class="header">
+        <div>
+          <h1 class="app-title">
+            <span class="emoji">👑</span>
+            Noble HammerTime Toolkit
+          </h1>
+          <p class="app-subtitle">
+            Select a time, generate Discord timestamps, and build Noble session announcements.
+          </p>
+        </div>
+        <div class="header-right">
+          <div class="timezone-pill">
+            <span class="online-dot"></span>
+            Timezone:
+            <span id="timezoneLabel" class="timezone-text">Local</span>
+          </div>
+          <button id="themeSwitch" class="theme-pill">
+            Theme: Classic
+          </button>
+        </div>
+      </header>
+
+      <!-- TIME + SESSION SETTINGS -->
+      <section class="grid-two section-gap">
+        <div class="card-block">
+          <h2 class="section-title">Time selection</h2>
+
+          <!-- main datetime input + reset -->
+          <div class="field-group">
+            <label for="datetime" class="field-label">
+              Base Date &amp; Time
+            </label>
+            <div class="field-row field-row-tight">
+              <input
+                id="datetime"
+                type="datetime-local"
+                step="1"
+                class="input"
+              />
+              <button type="button" id="resetNow" class="btn-ghost">
+                Now
+              </button>
+            </div>
+            <p class="hint">
+              This time is used as <code>Registration opens</code>.
+              You can type it directly or tap a quick preset.
+            </p>
+          </div>
+
+          <!-- quick time presets -->
+          <div class="field-group">
+            <div class="field-row">
+              <span class="field-label small">Quick times (today)</span>
+              <span class="muted tiny">15:00 – 23:00 (your timezone)</span>
+            </div>
+            <div class="utc-buttons" id="utcButtons"></div>
+          </div>
+        </div>
+
+        <!-- sessions + host + builder switch -->
+        <div class="card-block">
+          <h2 class="section-title">Session &amp; announcement</h2>
+
+          <div id="sessionCards" class="session-grid">
+            <!-- JS inserts session cards -->
+          </div>
+
+          <div class="field-group">
+            <label for="discordId" class="field-label small">
+              Your Discord user ID
+            </label>
+            <input
+              id="discordId"
+              type="text"
+              class="input small"
+              placeholder="e.g. 616671756471762944"
+            />
+            <p class="hint tiny">
+              We swap <code>&lt;@USER&gt;</code> with <code>&lt;@yourID&gt;</code>
+              in announcements. Stored in your browser.
+            </p>
+          </div>
+
+          <div class="field-group">
+            <!-- announce builder switch -->
+            <div class="switch-row">
+              <label class="switch">
+                <input type="checkbox" id="announceMode" />
+                <span class="switch-track">
+                  <span class="switch-thumb"></span>
+                </span>
+              </label>
+              <div class="switch-text">
+                <div class="switch-title">Enable session announce builder</div>
+                <div class="switch-sub">
+                  Builds the full Discord message for the selected session.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DISCORD TIMESTAMPS -->
+      <section class="section-gap">
+        <div class="section-header">
+          <h2 class="section-title">Discord timestamp helper</h2>
+          <div class="switch-row compact">
+            <label class="switch">
+              <input type="checkbox" id="toggleTimestampTable" checked />
+              <span class="switch-track">
+                <span class="switch-thumb"></span>
+              </span>
+            </label>
+            <div class="switch-text">
+              <div class="switch-title small">
+                Show Discord timestamp helper
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-card" id="timestampTableWrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Format</th>
+                <th>Chat Syntax / Copy</th>
+                <th class="hide-sm">Preview</th>
+              </tr>
+            </thead>
+            <tbody id="formatRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ANNOUNCEMENT -->
+      <section id="announceSection" class="section-gap hidden">
+        <div class="panel panel-violet">
+          <div class="panel-header">
+            <span class="panel-icon">📣</span>
+            <div>
+              <h2 class="section-title-small">Session announce builder</h2>
+              <p>
+                Uses your base time as <code>Registration opens</code> and
+                auto-calculates <code>First Game</code>.
+              </p>
+              <p class="hint tiny">
+                Use the second lobby switch below for lobbies that start
+                +5 minutes after the original time. Discord timestamp helper
+                above lets you build extra custom <code>&lt;t:...&gt;</code> tags.
+              </p>
+            </div>
+          </div>
+
+          <div class="announce-grid">
+            <div class="announce-left">
+              <!-- selected icon + name -->
+              <div class="announce-session-card">
+                <div class="announce-session-icon-wrap">
+                  <img
+                    id="announceSessionIcon"
+                    src="img/noble-solos.png"
+                    alt="Session icon"
+                    class="announce-session-icon"
+                  />
+                </div>
+                <div class="announce-session-texts">
+                  <div id="announceSessionTitle" class="announce-session-title">
+                    Noble Solos
+                  </div>
+                  <div class="announce-session-sub">
+                    Pick a session, choose queue type (where needed),
+                    then copy the ready-made message.
+                  </div>
+                </div>
+              </div>
+
+              <div class="field-group">
+                <label class="field-label small">Session type</label>
+                <div id="announceSessionButtons" class="pill-grid"></div>
+              </div>
+
+              <div class="field-group" id="queueTypeBlock">
+                <label class="field-label small">Queue type</label>
+                <div id="queueButtons" class="pill-row"></div>
+                <p class="hint tiny">
+                  Only affects the last line (1 per duo / 1 per squad).
+                </p>
+              </div>
+
+              <!-- second lobby switch moved into builder -->
+              <div class="field-group">
+                <div class="switch-row">
+                  <label class="switch">
+                    <input type="checkbox" id="secondLobby" />
+                    <span class="switch-track">
+                      <span class="switch-thumb"></span>
+                    </span>
+                  </label>
+                  <div class="switch-text">
+                    <div class="switch-title">Use second lobby template only</div>
+                    <div class="switch-sub">
+                      Registration opens +5 minutes after the original time.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="info-box">
+                <p>
+                  First game is <code>+20 min</code> for
+                  <b>Solos, Solos Closed &amp; Div0</b> and <code>+15 min</code>
+                  for <b>Div3 / Div2 / 24/7</b>.
+                </p>
+                <p class="mt-4">
+                  You can still edit channels, emojis, or wording after
+                  pasting into Discord.
+                </p>
+              </div>
+            </div>
+
+            <div class="announce-right">
+              <label class="field-label small">
+                Generated Discord message
+              </label>
+              <div class="textarea-wrapper">
+                <textarea id="announcementText" readonly></textarea>
+              </div>
+              <button id="copyAnnouncement" class="btn-copy-main">
+                Copy announcement
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div id="toast" class="toast">Copied</div>
+    </div>
+  </div>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
