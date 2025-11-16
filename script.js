@@ -351,7 +351,7 @@ function renderFormatTable() {
     return;
   }
 
-  // 1) normal format rows first
+  // 1) normal format rows (no Copy unix buttons here)
   formats.forEach((fmt) => {
     const tr = document.createElement("tr");
 
@@ -388,15 +388,8 @@ function renderFormatTable() {
     btnTag.textContent = "Copy tag";
     btnTag.addEventListener("click", () => copyText(snippet));
 
-    const btnUnix = document.createElement("button");
-    btnUnix.type = "button";
-    btnUnix.className = "btn-copy";
-    btnUnix.textContent = "Copy unix";
-    btnUnix.addEventListener("click", () => copyText(String(state.unix)));
-
     syntaxRow.appendChild(input);
     syntaxRow.appendChild(btnTag);
-    syntaxRow.appendChild(btnUnix);
     tdSyntax.appendChild(syntaxRow);
 
     const tdPreview = document.createElement("td");
@@ -411,7 +404,7 @@ function renderFormatTable() {
     tbody.appendChild(tr);
   });
 
-  // 2) unix-only row LAST
+  // 2) unix-only row LAST (this is the only place with Copy unix)
   const trUnix = document.createElement("tr");
   const tdUnixFmt = document.createElement("td");
   const pillUnix = document.createElement("div");
@@ -454,6 +447,7 @@ function renderFormatTable() {
   trUnix.appendChild(tdUnixPreview);
   tbody.appendChild(trUnix);
 }
+
 
 
 function renderQueueButtons() {
