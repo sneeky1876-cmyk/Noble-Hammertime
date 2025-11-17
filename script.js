@@ -70,6 +70,10 @@ const queueTypes = [
 
 const LS_KEY_DISCORD = "nobleDiscordId";
 const LS_KEY_THEME = "nobleTheme";
+const LS_KEY_ANNOUNCE = "nobleAnnounceMode";
+const LS_KEY_TS_HELPER = "nobleTimestampHelper";
+const LS_KEY_LAST_PAGE = "nobleLastPage";
+
 
 // division-specific config (not solos / solos_closed)
 const divisionConfig = {
@@ -842,11 +846,25 @@ function applyTheme(name) {
 
 document.addEventListener("DOMContentLoaded", () => {
   setTimezoneLabel();
+  try { localStorage.setItem(LS_KEY_LAST_PAGE, "main"); } catch {}
+
 
   const dtInput = document.getElementById("datetime");
   const resetBtn = document.getElementById("resetNow");
   const timestampToggle = document.getElementById("toggleTimestampTable");
   const timestampWrapper = document.getElementById("timestampTableWrapper");
+  try {
+  const v = localStorage.getItem(LS_KEY_TS_HELPER);
+  if (v === "0") {
+    timestampToggle.checked = false;
+    timestampWrapper.classList.add("hidden");
+  }
+  if (v === "1") {
+    timestampToggle.checked = true;
+    timestampWrapper.classList.remove("hidden");
+  }
+} catch {}
+
   const themeSwitch = document.getElementById("themeSwitch");
 
   // initial time = exact now (with seconds)
@@ -867,19 +885,23 @@ document.addEventListener("DOMContentLoaded", () => {
     applyUnix(unix);
   });
 
-  const scrimBtn = document.getElementById("openScrims");
-  if (scrimBtn) {
-    scrimBtn.onclick = () => window.location.href = "scrims.html";
+const scrimBtn = document.getElementById("openScrims");
+if (scrimBtn) {
+  scrimBtn.onclick = () => {
+    try { localStorage.setItem(LS_KEY_LAST_PAGE, "scrims"); } catch {}
+    window.location.href = "scrims.html";
+  };
 }
 
+
   // timestamp table visibility toggle
-  timestampToggle.addEventListener("change", (e) => {
-    if (e.target.checked) {
-      timestampWrapper.classList.remove("hidden");
-    } else {
-      timestampWrapper.classList.add("hidden");
-    }
-  });
+timestampToggle.addEventListener("change", (e) => {
+  const on = e.target.checked;
+  if (on) timestampWrapper.classList.remove("hidden");
+  else timestampWrapper.classList.add("hidden");
+  try { localStorage.setItem(LS_KEY_TS_HELPER, on ? "1" : "0"); } catch {}
+});
+
 
   // quick time presets
   renderUtcButtons();
@@ -908,10 +930,34 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // switches
-  document.getElementById("announceMode").addEventListener("change", (e) => {
-    state.announceMode = e.target.checked;
-    renderAnnouncement();
-  });
+ const announceToggle = document.getElementById("announceMode");
+const secondLobbyToggle = document.getElementById("secondLobby");
+
+try {
+  const v = localStorage.getItem(LS_KEY_ANNOUNCE);
+  if (v === "1") {
+    announceToggle.checked = true;
+    state.announceMode = true;
+  }
+  if (v === "0") {
+    announceToggle.checked = false;
+    state.announceMode = false;
+  }
+} catch {}
+
+renderAnnouncement();
+
+announceToggle.addEventListener("change", (e) => {
+  state.announceMode = e.target.checked;
+  try { localStorage.setItem(LS_KEY_ANNOUNCE, state.announceMode ? "1" : "0"); } catch {}
+  renderAnnouncement();
+});
+
+secondLobbyToggle.addEventListener("change", (e) => {
+  state.includeSecondLobby = e.target.checked;
+  renderAnnouncement();
+});
+
 
   document.getElementById("secondLobby").addEventListener("change", (e) => {
     state.includeSecondLobby = e.target.checked;

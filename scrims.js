@@ -1,3 +1,6 @@
+
+const LS_KEY_LAST_PAGE = "nobleLastPage";
+
 // SCRIMS HELPERS
 let state = {
   scrimQueueType: "solos",
@@ -100,6 +103,7 @@ function renderScrims() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  try { localStorage.setItem(LS_KEY_LAST_PAGE, "scrims"); } catch {}
   renderScrimQueueButtons();
   updateScrimTime();
 
