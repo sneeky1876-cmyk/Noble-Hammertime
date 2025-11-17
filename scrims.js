@@ -7,26 +7,66 @@ let state = {
   scrimUnix: null,
 };
 
-function computeNextScrimUnix(queueType) {
-  const now = new Date();
+function berlinLocalToUtc(year, month, day, hour, minute) {
+  let utcMs = Date.UTC(year, month - 1, day, hour, minute, 0, 0);
+  let d = new Date(utcMs);
 
-  for (let i = 0; i < 10; i++) {
-    const d = new Date();
-    d.setDate(now.getDate() + i);
+  const fmtHM = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Berlin",
+    hour12: false,
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
-    const day = d.getDay();
-    const weekend = day === 0 || day === 6;
+  const hmParts = fmtHM.formatToParts(d);
+  const bh = parseInt(hmParts.find((p) => p.type === "hour").value, 10);
+  const bm = parseInt(hmParts.find((p) => p.type === "minute").value, 10);
+  const diffMinutes = hour * 60 + minute - (bh * 60 + bm);
 
-    let hour = weekend ? 13 : 14;
-    let minute = queueType === "solos" ? 30 : queueType === "duos" ? 40 : 50;
-
-    d.setHours(hour, minute, 0, 0);
-
-    if (d > now) return Math.floor(d / 1000);
+  if (diffMinutes !== 0) {
+    utcMs += diffMinutes * 60 * 1000;
+    d = new Date(utcMs);
   }
 
-  return Math.floor(now / 1000);
+  return d;
 }
+
+function computeNextScrimUnix(queueType) {
+  const nowUtcMs = Date.now();
+
+  const fmtYMD = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Berlin",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+
+  for (let i = 0; i < 10; i++) {
+    const base = new Date(nowUtcMs + i * 86400000);
+    const parts = fmtYMD.formatToParts(base);
+    const year = parseInt(parts.find((p) => p.type === "year").value, 10);
+    const month = parseInt(parts.find((p) => p.type === "month").value, 10);
+    const day = parseInt(parts.find((p) => p.type === "day").value, 10);
+
+    const middayUtc = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+    const dow = middayUtc.getUTCDay();
+    const isWeekend = dow === 0 || dow === 6;
+
+    let hour = isWeekend ? 13 : 14;
+    let minute = 30;
+    if (queueType === "duos") minute = 40;
+    else if (queueType === "squads") minute = 50;
+
+    const candidate = berlinLocalToUtc(year, month, day, hour, minute);
+
+    if (candidate.getTime() > nowUtcMs) {
+      return Math.floor(candidate.getTime() / 1000);
+    }
+  }
+
+  return Math.floor(nowUtcMs / 1000);
+}
+
 
 function buildScrimFirstMessage() {
   const t = state.scrimUnix;
@@ -98,14 +138,22 @@ function renderScrims() {
   const t = state.scrimUnix;
   if (!t) return;
 
-  const d = new Date(t * 1000);
+    const d = new Date(t * 1000);
+
+  const berlinStr = new Intl.DateTimeFormat([], {
+    timeZone: "Europe/Berlin",
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(d);
+
   document.getElementById("scrimTimePreview").textContent =
-    "Scrim time: " + d.toLocaleString();
+    "Scrim time (CET): " + berlinStr + " — Discord: <t:" + t + ":t>";
 
   document.getElementById("scrimFirstText").value = buildScrimFirstMessage();
   document.getElementById("scrimConcludeText").value =
     buildScrimConcludeMessage();
 }
+
 
 document.addEventListener("DOMContentLoaded", () => {
   try { localStorage.setItem(LS_KEY_LAST_PAGE, "scrims"); } catch {}
