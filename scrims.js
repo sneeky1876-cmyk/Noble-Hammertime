@@ -61,18 +61,23 @@ function renderScrimQueueButtons() {
 
   types.forEach((t) => {
     const btn = document.createElement("button");
-    btn.className =
-      "pill-btn" + (state.scrimQueueType === t.value ? " selected" : "");
+    btn.className = "pill-btn";
+
+    if (state.scrimQueueType === t.value)
+      btn.classList.add("selected");
+
     btn.textContent = t.label;
 
     btn.onclick = () => {
       state.scrimQueueType = t.value;
-      updateScrimTime();
+      renderScrimQueueButtons();  
+      updateScrimTime();          
     };
 
     container.appendChild(btn);
   });
 }
+
 
 function updateScrimTime() {
   state.scrimUnix = computeNextScrimUnix(state.scrimQueueType);

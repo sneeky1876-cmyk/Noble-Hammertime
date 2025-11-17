@@ -328,39 +328,31 @@ function buildScrimConcludeMessage() {
 
 function renderScrimQueueButtons() {
   const container = document.getElementById("scrimQueueButtons");
-  if (!container) return;
-
   container.innerHTML = "";
 
-  const options = [
+  const types = [
     { value: "solos", label: "Solos" },
     { value: "duos", label: "Duos" },
     { value: "squads", label: "Squads" },
   ];
 
-  options.forEach((opt) => {
+  types.forEach((t) => {
     const btn = document.createElement("button");
-    btn.type = "button";
     btn.className =
-      "pill-btn" +
-      (state.scrimQueueType === opt.value ? " selected" : "");
-    btn.textContent = opt.label;
-    btn.addEventListener("click", () => {
-      state.scrimQueueType = opt.value;
-      state.scrimUnix = computeNextScrimUnix(state.scrimQueueType);
+      "pill-btn" + (state.scrimQueueType === t.value ? " selected" : "");
+    btn.textContent = t.label;
 
-      const input = document.getElementById("scrimTimeInput");
-      if (input && state.scrimUnix != null) {
-        const d = new Date(state.scrimUnix * 1000);
-        input.value = dateTimeStringFromDate(d);
-      }
+    btn.onclick = () => {
+      state.scrimQueueType = t.value;
+      renderScrimQueueButtons(); // 🔥 THIS LINE IS THE IMPORTANT ONE
+      updateScrimTime();
+    };
 
-      renderScrimQueueButtons();
-      renderScrims();
-    });
     container.appendChild(btn);
   });
 }
+
+
 
 function renderScrims() {
   const firstArea = document.getElementById("scrimFirstText");
@@ -595,21 +587,27 @@ function renderQueueButtons() {
 
   block.style.display = "";
   row.innerHTML = "";
+
   queueTypes.forEach((q) => {
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.className =
-      "pill-btn" + (state.queueType === q.value ? "selected pill-btn" : " pill-btn");
+    btn.className = "pill-btn";
+
+    // highlight when selected
     if (state.queueType === q.value) btn.classList.add("selected");
+
     btn.textContent = q.label;
+
     btn.addEventListener("click", () => {
       state.queueType = q.value;
-      renderQueueButtons();
-      renderAnnouncement();
+      renderQueueButtons();     // redraw buttons AND highlight
+      renderAnnouncement();     // update text
     });
+
     row.appendChild(btn);
   });
 }
+
 
 function renderAnnounceSessionButtons() {
   const container = document.getElementById("announceSessionButtons");
