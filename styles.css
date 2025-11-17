@@ -787,9 +787,10 @@ tr + tr td {
     font-size: 1.5rem;
   }
 
-  .hide-sm {
+  /*.hide-sm {
     display: none;
   }
+   */
 
   .announce-grid {
     gap: 0.8rem;
