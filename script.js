@@ -120,7 +120,12 @@ let state = {
   sessionKind: "solos",
   queueType: "duos",
   discordId: "",
+
+  // scrims
+  scrimUnix: null,
+  scrimQueueType: "solos", // "solos" | "duos" | "squads"
 };
+
 
 // ---------- HELPERS ----------
 
@@ -259,6 +264,131 @@ function applyUnix(unix) {
   if (unix != null) setInputsFromUnix(unix);
   renderAll();
 }
+
+// ---------- SCRIMS HELPERS ----------
+
+// next scrim time based on weekday/weekend & queue type
+function computeNextScrimUnix(queueType) {
+  const now = new Date();
+
+  for (let i = 0; i < 10; i++) {
+    const d = new Date(now.getTime());
+    d.setDate(now.getDate() + i);
+
+    const day = d.getDay(); // 0=Sun, 6=Sat
+    const isWeekend = day === 0 || day === 6;
+
+    let hour = isWeekend ? 13 : 14; // 1h earlier on weekend
+    let minute = 30; // solos default
+
+    if (queueType === "duos") minute = 40;
+    if (queueType === "squads") minute = 50;
+
+    d.setHours(hour, minute, 0, 0);
+
+    // pick the *next* time in the future
+    if (d.getTime() > now.getTime()) {
+      return Math.floor(d.getTime() / 1000);
+    }
+  }
+
+  // fallback: now
+  return Math.floor(now.getTime() / 1000);
+}
+
+function buildScrimFirstMessage() {
+  if (state.scrimUnix == null) return "";
+
+  const t = state.scrimUnix;
+
+  return (
+    "<@&854727975550320650>\n\n" +
+    `<:ArrowRight:1398394460941062327> The **First Match** is @ <t:${t}:t> ~ <t:${t}:R>!\n\n` +
+    "• Please read the <#854739679320473610> before playing. 🏆"
+  );
+}
+
+function buildScrimConcludeMessage() {
+  if (state.scrimUnix == null) return "";
+
+  const map = { solos: "solo", duos: "duo", squads: "squad" };
+  const label = map[state.scrimQueueType] || "squad";
+  const t = state.scrimUnix;
+
+  return (
+    `**The ${label} Scrims have __concluded__!**\n\n` +
+    `<:ArrowRight:1398394460941062327> Games will resume **at <t:${t}:t>** <a:heartcartoon:919242010123206666>\n\n` +
+    "• Make sure to invite your friends over, https://discord.gg/EU"
+  );
+}
+
+function renderScrimQueueButtons() {
+  const container = document.getElementById("scrimQueueButtons");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  const options = [
+    { value: "solos", label: "Solos" },
+    { value: "duos", label: "Duos" },
+    { value: "squads", label: "Squads" },
+  ];
+
+  options.forEach((opt) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className =
+      "pill-btn" +
+      (state.scrimQueueType === opt.value ? " selected" : "");
+    btn.textContent = opt.label;
+    btn.addEventListener("click", () => {
+      state.scrimQueueType = opt.value;
+      state.scrimUnix = computeNextScrimUnix(state.scrimQueueType);
+
+      const input = document.getElementById("scrimTimeInput");
+      if (input && state.scrimUnix != null) {
+        const d = new Date(state.scrimUnix * 1000);
+        input.value = dateTimeStringFromDate(d);
+      }
+
+      renderScrimQueueButtons();
+      renderScrims();
+    });
+    container.appendChild(btn);
+  });
+}
+
+function renderScrims() {
+  const firstArea = document.getElementById("scrimFirstText");
+  const concludeArea = document.getElementById("scrimConcludeText");
+  const preview = document.getElementById("scrimTimePreview");
+
+  if (!firstArea || !concludeArea || !preview) return;
+
+  if (state.scrimUnix == null) {
+    firstArea.value =
+      "Pick a scrim time above (auto or manual) to generate the First Match message.";
+    concludeArea.value =
+      "Pick a scrim time above (auto or manual) to generate the conclude message.";
+    preview.textContent =
+      'Select a scrim time or use "Set to next scheduled time".';
+    return;
+  }
+
+  const d = new Date(state.scrimUnix * 1000);
+  const localStr = d.toLocaleString([], {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+
+  preview.textContent =
+    `Using scrim time: ${localStr}  — Discord: ` +
+    `<t:${state.scrimUnix}:t>`;
+
+  firstArea.value = buildScrimFirstMessage();
+  concludeArea.value = buildScrimConcludeMessage();
+}
+
 
 // ---------- RENDERING ----------
 
@@ -737,6 +867,11 @@ document.addEventListener("DOMContentLoaded", () => {
     applyUnix(unix);
   });
 
+  const scrimBtn = document.getElementById("openScrims");
+  if (scrimBtn) {
+    scrimBtn.onclick = () => window.location.href = "scrims.html";
+}
+
   // timestamp table visibility toggle
   timestampToggle.addEventListener("change", (e) => {
     if (e.target.checked) {
@@ -797,6 +932,57 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // timestamp table initial render
   renderFormatTable();
+
+  // ----- SCRIMS INIT -----
+state.scrimQueueType = "solos";
+state.scrimUnix = computeNextScrimUnix(state.scrimQueueType);
+
+renderScrimQueueButtons();
+
+const scrimInput = document.getElementById("scrimTimeInput");
+if (scrimInput && state.scrimUnix != null) {
+  const d = new Date(state.scrimUnix * 1000);
+  scrimInput.value = dateTimeStringFromDate(d);
+}
+
+const scrimAutoBtn = document.getElementById("scrimAutoNext");
+if (scrimAutoBtn) {
+  scrimAutoBtn.addEventListener("click", () => {
+    state.scrimUnix = computeNextScrimUnix(state.scrimQueueType);
+    if (scrimInput && state.scrimUnix != null) {
+      const d = new Date(state.scrimUnix * 1000);
+      scrimInput.value = dateTimeStringFromDate(d);
+    }
+    renderScrims();
+  });
+}
+
+if (scrimInput) {
+  scrimInput.addEventListener("input", () => {
+    state.scrimUnix = toUnixFromLocalInput(scrimInput.value);
+    renderScrims();
+  });
+}
+
+const btnFirst = document.getElementById("copyScrimFirst");
+const btnConclude = document.getElementById("copyScrimConclude");
+
+if (btnFirst) {
+  btnFirst.addEventListener("click", () => {
+    const txt = document.getElementById("scrimFirstText").value;
+    if (txt) copyText(txt);
+  });
+}
+
+if (btnConclude) {
+  btnConclude.addEventListener("click", () => {
+    const txt = document.getElementById("scrimConcludeText").value;
+    if (txt) copyText(txt);
+  });
+}
+
+renderScrims();
+
 
   // theme initial + toggle through 3 themes
   const themes = ["classic", "emerald", "clean"];

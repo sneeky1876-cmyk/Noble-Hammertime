@@ -889,3 +889,133 @@ body[data-theme="clean"] .input:focus {
   outline-color: #2563eb;
   border-color: #2563eb;
 }
+
+.section-switch-btn {
+  margin-top: 12px;
+  margin-bottom: 14px;
+  padding: 12px 16px;
+  width: 100%;
+  font-size: 1.05rem;
+  background: linear-gradient(135deg, #6a5af9, #8978ff);
+  border: none;
+  border-radius: 14px;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+
+  display: flex;              /* NEW */
+  align-items: center;        /* NEW */
+  justify-content: center;    /* keep centered text+icon */
+  gap: 8px;                   /* space between icon and text */
+}
+
+.nav-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.section-switch-btn:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+
+.section-switch-btn {
+  margin: 20px 0 28px 0 !important;
+  padding: 14px 18px !important;
+  font-size: 1.1rem !important;
+}
+
+#scrimTimePreview {
+  margin-top: -4px;   /* moves it a bit closer to the input */
+  margin-bottom: 4px; /* tiny space below */
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+
+.scrim-time-row input {
+  padding: 10px 14px;
+  font-size: 1rem;
+}
+
+.scrim-time-row button {
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  margin-bottom: 8px;   /* <-- adds space under the button */
+}
+
+
+/* --- Scrims Page Fixes --- */
+
+/* Make textboxes stretch full width */
+.textarea-wrapper textarea {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Tighter spacing between sections */
+.scrims-grid {
+  gap: 16px;
+}
+
+.section .field-group {
+  margin-bottom: 14px;
+}
+
+.scrims-grid .panel-header {
+  margin-bottom: 10px;
+}
+
+
+/* Stop gradient from making panel too large */
+.panel-violet {
+  background-size: cover;
+}
+
+.panel-violet {
+  background: radial-gradient(circle at top left, #4c1d95, #020617 60%);
+  border-color: rgba(129, 140, 248, 0.7);
+}
+
+/* Make .panel-emerald look like the violet panel on the scrims page */
+.panel-emerald {
+  background: radial-gradient(circle at top left, #4c1d95, #020617 60%);
+  border-color: rgba(129, 140, 248, 0.7);
+}
+
+/* --- CLEAN SCRIMS LAYOUT FIX --- */
+
+/* Scrims layout spacing */
+.scrims-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Scrims panels (smaller + tighter) */
+.scrims-grid .panel {
+  padding: 16px 20px;
+  border-radius: 14px;
+  min-height: auto;
+}
+
+/* Scrims textarea (large & wide) */
+.scrims-grid textarea {
+  width: 100%;
+  max-width: 100%;
+  min-height: 150px;
+  font-size: 1rem;
+  line-height: 1.45;
+  padding: 14px;
+  border-radius: 12px;
+  resize: vertical;
+}
+
+/* Force the copy button BELOW textarea */
+.scrims-grid .btn-copy-main {
+  margin-top: 10px;
+  align-self: flex-start;
+}
