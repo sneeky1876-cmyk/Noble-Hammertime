@@ -88,7 +88,7 @@ const divisionConfig = {
     emoji: "<:arrow:1398419775574511766>",
     channels:
       "<#757574098359550082>, <#860622870563520513> & <#912669854543269888>",
-    reactsDuo: { first: 25, second: 50 },
+    reactsDuo: { first: 45, second: 100 },
     reactsSquad: { first: 25, second: 50 },
   },
   div3: {
@@ -98,7 +98,7 @@ const divisionConfig = {
     channels:
       "<#902656971801493545>, <#902656971801493547> & <#1383042801754968135>",
     reactsDuo: { first: 45, second: 100 },
-    reactsSquad: { first: 45, second: 100 },
+    reactsSquad: { first: 25, second: 50 },
   },
   "247": {
     name: "24/7",
@@ -107,7 +107,7 @@ const divisionConfig = {
     channels:
       "<#1282840995846950962>, <#1282841044521717761> & <#1282841572336996372>",
     reactsDuo: { first: 45, second: 100 },
-    reactsSquad: { first: 45, second: 100 },
+    reactsSquad: { first: 25, second: 50 },
   },
 };
 
