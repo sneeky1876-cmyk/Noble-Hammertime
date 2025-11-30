@@ -83,7 +83,7 @@ const divisionConfig = {
     emoji: "<:ArrowRight:1398422494817419385>",
     channels:
       "<#1282840995846950962>, <#1282841044521717761> & <#1282841572336996372>",
-    reactsDuo: { first: 45, second: 100 },
+    reactsDuo: { first: 55, second: 110 },
     reactsSquad: { first: 25, second: 50 },
   },
   div2: {
@@ -92,7 +92,7 @@ const divisionConfig = {
     emoji: "<:arrow:1398419775574511766>",
     channels:
       "<#757574098359550082>, <#860622870563520513> & <#912669854543269888>",
-    reactsDuo: { first: 45, second: 100 },
+    reactsDuo: { first: 55, second: 110 },
     reactsSquad: { first: 25, second: 50 },
   },
   div3: {
@@ -101,7 +101,7 @@ const divisionConfig = {
     emoji: "<:ArrowRight:1398315425913372872>",
     channels:
       "<#902656971801493545>, <#902656971801493547> & <#1383042801754968135>",
-    reactsDuo: { first: 45, second: 100 },
+    reactsDuo: { first: 55, second: 110 },
     reactsSquad: { first: 25, second: 50 },
   },
   "247": {
@@ -110,7 +110,7 @@ const divisionConfig = {
     emoji: "<:ArrowRight:1398422494817419385>",
     channels:
       "<#1282840995846950962>, <#1282841044521717761> & <#1282841572336996372>",
-    reactsDuo: { first: 45, second: 100 },
+    reactsDuo: { first: 55, second: 110 },
     reactsSquad: { first: 25, second: 50 },
   },
 };
@@ -660,7 +660,7 @@ function buildSolosAnnouncement() {
       "• Session lasts 3 Games. **Miss a single game and you will be banned.**\n" +
       "• Make sure to read <#1098721307643875390>, <#1124136360522027179> & <#1098721307643875391> before the games.\n" +
       "• Top 10 = Noble Solos Closed <:solos_closed:1403796828239040534> \n\n" +
-      "Required at least **90+ Reacts**";
+      "Required at least **110+ Reacts**";
 
     if (id) text = text.replace(/<@USER>/g, `<@${id}>`);
     return text;
@@ -681,7 +681,7 @@ function buildSolosAnnouncement() {
     "• Session lasts 3 Games. **Miss a single game and you will be banned.**\n" +
     "• Make sure to read <#1098721307643875390>, <#1124136360522027179> & <#1098721307643875391> before the games.\n" +
     "• Top 10 = Noble Solos Closed <:solos_closed:1403796828239040534> \n\n" +
-    "Required at least **90+ Reacts**";
+    "Required at least **110+ Reacts**";
 
   if (id) text2 = text2.replace(/<@USER>/g, `<@${id}>`);
   return text2;
