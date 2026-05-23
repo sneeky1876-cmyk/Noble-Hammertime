@@ -210,7 +210,24 @@
                 <label class="field-label small">Queue type</label>
                 <div id="queueButtons" class="pill-row"></div>
                 <p class="hint tiny">
-                  Only affects the last line (1 per duo / 1 per squad).
+                  Use Reload for division reload presets. Hidden for Solos, Solos Closed and 24/7.
+                </p>
+              </div>
+
+              <div class="field-group hidden" id="sessionNumber247Block">
+                <label for="sessionNumber247" class="field-label small">
+                  24/7 session number
+                </label>
+                <input
+                  id="sessionNumber247"
+                  type="number"
+                  min="1"
+                  step="1"
+                  class="input small"
+                  placeholder="1"
+                />
+                <p class="hint tiny">
+                  Updates the title, for example <code>Noble 24/7 Session 1</code>.
                 </p>
               </div>
 
@@ -235,8 +252,9 @@
               <div class="info-box">
                 <p>
                   First game is <code>+20 min</code> for
-                  <b>Solos, Solos Closed &amp; Div0</b> and <code>+15 min</code>
-                  for <b>Div3 / Div2 / 24/7</b>.
+                  <b>Solos &amp; Div0</b>, <code>+30 min</code> for
+                  <b>Solos Closed</b>, and <code>+15 min</code> for
+                  <b>Div3 / Div2 / 24/7</b>.
                 </p>
                 <p class="mt-4">
                   You can still edit channels, emojis, or wording after
@@ -265,6 +283,5 @@
     </div>
   </div>
 
-  <script src="script.js" defer></script>
 </body>
 </html>

@@ -66,6 +66,7 @@ const sessionKinds = [
 const queueTypes = [
   { value: "duos", label: "Duos" },
   { value: "squads", label: "Squads" },
+  { value: "reload", label: "Reload" },
 ];
 
 const LS_KEY_DISCORD = "nobleDiscordId";
@@ -73,6 +74,7 @@ const LS_KEY_THEME = "nobleTheme";
 const LS_KEY_ANNOUNCE = "nobleAnnounceMode";
 const LS_KEY_TS_HELPER = "nobleTimestampHelper";
 const LS_KEY_LAST_PAGE = "nobleLastPage";
+const LS_KEY_247_SESSION = "noble247SessionNumber";
 
 
 // division-specific config (not solos / solos_closed)
@@ -124,6 +126,7 @@ let state = {
   sessionKind: "solos",
   queueType: "duos",
   discordId: "",
+  sessionNumber247: "1",
 
   // scrims
   scrimUnix: null,
@@ -328,6 +331,7 @@ function buildScrimConcludeMessage() {
 
 function renderScrimQueueButtons() {
   const container = document.getElementById("scrimQueueButtons");
+  if (!container) return;
   container.innerHTML = "";
 
   const types = [
@@ -579,8 +583,13 @@ function renderFormatTable() {
 function renderQueueButtons() {
   const block = document.getElementById("queueTypeBlock");
   const row = document.getElementById("queueButtons");
+  if (!block || !row) return;
 
-  if (state.sessionKind === "solos" || state.sessionKind === "solos_closed") {
+  if (
+    state.sessionKind === "solos" ||
+    state.sessionKind === "solos_closed" ||
+    state.sessionKind === "247"
+  ) {
     block.style.display = "none";
     return;
   }
@@ -609,6 +618,27 @@ function renderQueueButtons() {
 }
 
 
+function renderSessionNumber247() {
+  const block = document.getElementById("sessionNumber247Block");
+  const input = document.getElementById("sessionNumber247");
+  if (!block || !input) return;
+
+  if (state.sessionKind === "247") {
+    block.classList.remove("hidden");
+    if (input.value !== state.sessionNumber247) {
+      input.value = state.sessionNumber247;
+    }
+  } else {
+    block.classList.add("hidden");
+  }
+}
+
+function sanitizeSessionNumber(value) {
+  const n = parseInt(value, 10);
+  if (!Number.isFinite(n) || n < 1) return "1";
+  return String(n);
+}
+
 function renderAnnounceSessionButtons() {
   const container = document.getElementById("announceSessionButtons");
   container.innerHTML = "";
@@ -622,6 +652,7 @@ function renderAnnounceSessionButtons() {
       state.sessionKind = s.value;
       renderAnnounceSessionButtons();
       renderQueueButtons();
+      renderSessionNumber247();
       renderAnnouncement();
       renderSessionCards();
       updateAnnounceIcon();
@@ -688,7 +719,7 @@ function buildSolosAnnouncement() {
 }
 
 function buildSolosClosedAnnouncement() {
-  const delayMinutes = 20;
+  const delayMinutes = 30;
   const emoji = "<:ArrowRight:1403465070234701854>";
   const id = state.discordId.trim();
 
@@ -733,9 +764,93 @@ function buildSolosClosedAnnouncement() {
   return text2;
 }
 
+function buildReloadAnnouncement(cfg) {
+  const delay = cfg.delayMinutes;
+  const emoji = cfg.emoji;
+  const id = state.discordId.trim();
+  const title = `Noble ${cfg.name} Practice Session (Reload)`;
+
+  if (!state.includeSecondLobby) {
+    const baseTag = `<t:${state.unix}:t>`;
+    const firstUnix = state.unix + delay * 60;
+    const firstTag = `<t:${firstUnix}:t>`;
+
+    let text =
+      "@everyone\n\n" +
+      `**${title}**\n\n` +
+      `${emoji} Registration opens ${baseTag}\n\n` +
+      `${emoji} First Game Commences ${firstTag}\n\n` +
+      "The host for this session is: <@USER>   Direct Message them for help.\n\n" +
+      "• Session lasts 3 Games. **Miss a single game and you will be banned.**\n" +
+      `• Make sure to read ${cfg.channels} before the games.\n\n` +
+      "Required at least **25+ Reacts** (1 per duo)\n" +
+      "**50+ Reacts** for a second lobby";
+
+    if (id) text = text.replace(/<@USER>/g, `<@${id}>`);
+    return text;
+  }
+
+  const reg2Unix = state.unix + 5 * 60;
+  const regTag2 = `<t:${reg2Unix}:t>`;
+  const firstUnix2 = reg2Unix + delay * 60;
+  const firstTag2 = `<t:${firstUnix2}:t>`;
+
+  let text2 =
+    "@everyone\n\n" +
+    `**${title}**\n\n` +
+    "**Second Lobby**\n\n" +
+    `${emoji} Registration opens ${regTag2}\n\n` +
+    `${emoji} First Game Commences ${firstTag2}\n\n` +
+    "The host for this session is: <@USER>, Direct Message them for help.\n\n" +
+    "Required at least **25+ Reacts** (1 per duo)";
+
+  if (id) text2 = text2.replace(/<@USER>/g, `<@${id}>`);
+  return text2;
+}
+
+function build247Announcement() {
+  const cfg = divisionConfig["247"];
+  const delay = cfg.delayMinutes;
+  const sessionNumber = sanitizeSessionNumber(state.sessionNumber247);
+  const host = state.discordId.trim() ? `<@${state.discordId.trim()}>` : "<@>";
+  const title = `Noble 24/7 Session ${sessionNumber}`;
+
+  if (!state.includeSecondLobby) {
+    const baseTag = `<t:${state.unix}:t>`;
+    const firstUnix = state.unix + delay * 60;
+    const firstTag = `<t:${firstUnix}:t>`;
+
+    return (
+      "@everyone\n\n" +
+      `**${title}**\n\n` +
+      `:arrow: Registration opens @ ${baseTag}\n\n` +
+      `:arrow: First Game Commences @ ${firstTag}\n\n` +
+      `The host for this session is: ${host}, if you need any help.\n\n` +
+      "3 Games,Required at least **55+ Reacts** for 1 lobby and **110+ Reacts** for a 2nd lobby (1 per duo)."
+    );
+  }
+
+  const reg2Unix = state.unix + 5 * 60;
+  const regTag2 = `<t:${reg2Unix}:t>`;
+  const firstUnix2 = reg2Unix + delay * 60;
+  const firstTag2 = `<t:${firstUnix2}:t>`;
+
+  return (
+    "@everyone\n\n" +
+    `**${title}**\n\n` +
+    "**Second Lobby**\n\n" +
+    `:arrow: Registration opens @ ${regTag2}\n\n` +
+    `:arrow: First Game Commences @ ${firstTag2}\n\n` +
+    `The host for this session is: ${host}, if you need any help.\n\n` +
+    "3 Games, Required at least 55+ Reacts (1 per Duo)."
+  );
+}
+
 function buildDivisionAnnouncement() {
   const cfg = divisionConfig[state.sessionKind];
   if (!cfg) return "";
+  if (state.sessionKind === "247") return build247Announcement();
+  if (state.queueType === "reload") return buildReloadAnnouncement(cfg);
 
   const delay = cfg.delayMinutes;
   const emoji = cfg.emoji;
@@ -744,10 +859,7 @@ function buildDivisionAnnouncement() {
   const reacts =
     state.queueType === "squads" ? cfg.reactsSquad : cfg.reactsDuo;
 
-  const baseName =
-    state.sessionKind === "247"
-      ? "Noble 24/7 Practice Session"
-      : `Noble ${cfg.name} Practice Session`;
+  const baseName = `Noble ${cfg.name} Practice Session`;
   const titleSuffix = state.queueType === "squads" ? " (Squads)" : "";
   const fullTitle = baseName + titleSuffix;
   const id = state.discordId.trim();
@@ -808,6 +920,7 @@ function renderAnnouncement() {
 
   renderAnnounceSessionButtons();
   renderQueueButtons();
+  renderSessionNumber247();
   updateAnnounceIcon();
 
   const ta = document.getElementById("announcementText");
@@ -926,6 +1039,29 @@ timestampToggle.addEventListener("change", (e) => {
     }
     renderAnnouncement();
   });
+
+  const sessionNumberInput = document.getElementById("sessionNumber247");
+  try {
+    const savedSessionNumber = localStorage.getItem(LS_KEY_247_SESSION);
+    if (savedSessionNumber) {
+      state.sessionNumber247 = sanitizeSessionNumber(savedSessionNumber);
+    }
+  } catch {
+    /* ignore */
+  }
+  if (sessionNumberInput) {
+    sessionNumberInput.value = state.sessionNumber247;
+    sessionNumberInput.addEventListener("input", (e) => {
+      state.sessionNumber247 = sanitizeSessionNumber(e.target.value);
+      e.target.value = state.sessionNumber247;
+      try {
+        localStorage.setItem(LS_KEY_247_SESSION, state.sessionNumber247);
+      } catch {
+        /* ignore */
+      }
+      renderAnnouncement();
+    });
+  }
 
   // switches
  const announceToggle = document.getElementById("announceMode");
