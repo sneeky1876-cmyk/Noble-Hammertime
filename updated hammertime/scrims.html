@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Noble Practice Scrims</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/png" href="img/favicon.png?v=1" />
+  <script defer src="scrims.js"></script>
+</head>
+
+
+<body>
+  <div class="app">
+    <div class="app-inner">
+
+      <h1 class="app-title">Noble Practice Scrims</h1>
+      <p class="section-subtitle">Scrim First Match + Conclude Messages</p>
+
+      <button onclick="location.href='index.html'" class="section-switch-btn">
+  <img
+    src="img/noble-scrims.png"
+    alt="Noble Practice Scrims"
+    class="nav-icon"
+  />
+  ← Back to HammerTime Toolkit
+</button>
+
+
+      <div class="section">
+        <div class="field-group">
+          <label class="field-label small">Queue Type</label>
+          <div id="scrimQueueButtons" class="pill-row"></div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label small">Scrim Time</label>
+          <div class="scrim-time-row">
+            <button id="scrimAutoNext" class="btn-copy">Next scheduled time</button>
+            <input id="scrimTimeInput" type="datetime-local" class="input small">
+          </div>
+          <p id="scrimTimePreview" class="hint tiny"></p>
+        </div>
+      </div>
+
+      <div class="scrims-grid">
+        <div class="panel panel-violet">
+          <h3 class="panel-title-small">First Match Message</h3>
+          <textarea id="scrimFirstText" readonly></textarea>
+          <button id="copyScrimFirst" class="btn-copy-main">Copy First Match</button>
+        </div>
+
+        <div class="panel panel-emerald">
+          <h3 class="panel-title-small">Conclude Message</h3>
+          <textarea id="scrimConcludeText" readonly></textarea>
+          <button id="copyScrimConclude" class="btn-copy-main">Copy Conclude</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
