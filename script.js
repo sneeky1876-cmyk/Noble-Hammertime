@@ -108,7 +108,7 @@ const divisionConfig = {
   },
   "247": {
     name: "24/7",
-    delayMinutes: 15,
+    delayMinutes: 20,
     emoji: "<:ArrowRight:1398422494817419385>",
     channels:
       "<#1282840995846950962>, <#1282841044521717761> & <#1282841572336996372>",
@@ -690,7 +690,7 @@ function buildSolosAnnouncement() {
       "The host for this session is: <@USER>, Direct Message them for help.\n\n" +
       "• Session lasts 3 Games. **Miss a single game and you will be banned.**\n" +
       "• Make sure to read <#1098721307643875390>, <#1124136360522027179> & <#1098721307643875391> before the games.\n" +
-      "• Top 10 = Noble Solos Closed <:solos_closed:1403796828239040534> \n\n" +
+      "• Top 20 = Noble Solos Closed <:solos_closed:1403796828239040534> \n\n" +
       "Required at least **110+ Reacts**";
 
     if (id) text = text.replace(/<@USER>/g, `<@${id}>`);
@@ -711,7 +711,7 @@ function buildSolosAnnouncement() {
     "The host for this session is: <@USER>, Direct Message them for help.\n\n" +
     "• Session lasts 3 Games. **Miss a single game and you will be banned.**\n" +
     "• Make sure to read <#1098721307643875390>, <#1124136360522027179> & <#1098721307643875391> before the games.\n" +
-    "• Top 10 = Noble Solos Closed <:solos_closed:1403796828239040534> \n\n" +
+    "• Top 20 = Noble Solos Closed <:solos_closed:1403796828239040534> \n\n" +
     "Required at least **110+ Reacts**";
 
   if (id) text2 = text2.replace(/<@USER>/g, `<@${id}>`);
@@ -736,7 +736,9 @@ function buildSolosClosedAnnouncement() {
       "The host for this session is: <@USER>, Direct Message them for help.\n\n" +
       "• Session lasts 3 Games. **Miss a single game and you will be banned.**\n" +
       "• Make sure to read <#1403403385146704044>, <#1403403385146704045> & <#1403403385146704043> before the games.\n" +
-      "• Top 3 = Division 3 Invite <:noble_division3_icon:1403477545348759645>\n\n" +
+      "• Top 1 = Division 2 access :noble_division2_icon:  (Top 5 for Whop Supporters)\n" +
+      "• Top 5 = Division 3 Invite :noble_division3_icon:  (Top 20 for [Whop Supporters](https://whop.com/nobleprac/))\n" +
+      "• Top 10 = <@&1403403384115040376> (only for the next session)\n\n" +
       "Required at least 110+ Reacts.";
 
     if (id) text = text.replace(/<@USER>/g, `<@${id}>`);
@@ -757,7 +759,9 @@ function buildSolosClosedAnnouncement() {
     "The host for this session is: <@USER>, Direct Message them for help.\n\n" +
     "• Session lasts 3 Games. **Miss a single game and you will be banned.**\n" +
     "• Make sure to read <#1403403385146704044>, <#1403403385146704045> & <#1403403385146704043> before the games.\n" +
-    "• Top 3 = Division 3 Invite <:noble_division3_icon:1403477545348759645>\n\n" +
+    "• Top 1 = Division 2 access :noble_division2_icon:  (Top 5 for Whop Supporters)\n" +
+    "• Top 5 = Division 3 Invite :noble_division3_icon:  (Top 20 for [Whop Supporters](https://whop.com/nobleprac/))\n" +
+    "• Top 10 = <@&1403403384115040376> (only for the next session)\n\n" +
     "Required at least 110+ Reacts.";
 
   if (id) text2 = text2.replace(/<@USER>/g, `<@${id}>`);
